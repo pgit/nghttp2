@@ -106,16 +106,6 @@ void http2::add_connection(ssl_socket &&socket)
   impl_->add_connection(std::move(socket));
 }
 
-void http2::add_connection(beast_socket &&socket, std::string settings)
-{
-  impl_->add_connection(std::move(socket), std::move(settings));
-}
-
-void http2::add_connection(beast_ssl_socket &&socket)
-{
-  impl_->add_connection(std::move(socket));
-}
-
 } // namespace server
 
 } // namespace asio_http2

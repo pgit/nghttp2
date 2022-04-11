@@ -50,9 +50,6 @@
 
 #include "asio_io_service_pool.h"
 
-#include <boost/beast/core/tcp_stream.hpp>
-#include <boost/beast/ssl/ssl_stream.hpp>
-
 
 namespace nghttp2 {
 
@@ -93,8 +90,6 @@ public:
 
   void add_connection(tcp::socket &&socket, serve_mux &mux, std::string settings);
   void add_connection(ssl_socket &&socket, serve_mux& mux);
-  void add_connection(beast_socket&& socket, serve_mux& mux, std::string settings);
-  void add_connection(beast_ssl_socket&& socket, serve_mux& mux);
 
 private:
   /// Initiate an asynchronous accept operation.

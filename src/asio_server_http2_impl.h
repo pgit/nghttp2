@@ -59,8 +59,6 @@ public:
   void create();
   void add_connection(boost::asio::ip::tcp::socket&& socket, std::string settings);
   void add_connection(ssl_socket&& socket);
-  void add_connection(beast_socket&& socket, std::string settings);
-  void add_connection(beast_ssl_socket&& socket);
 
 private:
   std::unique_ptr<server> server_;

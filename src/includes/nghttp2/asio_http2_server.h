@@ -27,9 +27,6 @@
 
 #include <nghttp2/asio_http2.h>
 
-#include <boost/beast/core/tcp_stream.hpp>
-#include <boost/beast/ssl/ssl_stream.hpp>
-
 namespace nghttp2 {
 
 namespace asio_http2 {
@@ -37,20 +34,6 @@ namespace asio_http2 {
 namespace server {
 
 using ssl_socket = boost::asio::ssl::stream<boost::asio::ip::tcp::socket>;
-class beast_socket : public boost::beast::tcp_stream
-{
-public:
-  beast_socket(boost::beast::tcp_stream&& mv) : boost::beast::tcp_stream(std::move(mv)) {}
-  // using boost::beast::tcp_stream::tcp_stream;
-  inline boost::asio::ip::tcp::socket& lowest_layer() { return socket(); }
-};
-class beast_ssl_socket : public boost::beast::ssl_stream<boost::beast::tcp_stream>
-{
-public:
-  beast_ssl_socket(boost::beast::ssl_stream<boost::beast::tcp_stream>&& mv) : ssl_stream(std::move(mv)) {}
-  // using boost::beast::ssl_stream<boost::beast::tcp_stream>::ssl_stream;
-  inline boost::asio::ip::tcp::socket& lowest_layer() { return next_layer().socket(); }
-};
 
 class request_impl;
 class response_impl;
@@ -244,8 +227,6 @@ public:
 
   void add_connection(boost::asio::ip::tcp::socket &&socket, std::string settings);
   void add_connection(ssl_socket &&socket);
-  void add_connection(beast_socket &&socket, std::string settings);
-  void add_connection(beast_ssl_socket &&socket);
 
 private:
   std::unique_ptr<http2_impl> impl_;

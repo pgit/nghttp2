@@ -201,20 +201,6 @@ void server::add_connection(ssl_socket &&socket, serve_mux &mux) {
   new_connection->start();
 }
 
-void server::add_connection(beast_socket&& socket, serve_mux &mux, std::string settings) {
-  auto new_connection = std::make_shared<connection<beast_socket>>(
-      mux, tls_handshake_timeout_, read_timeout_, std::move(socket));
-  new_connection->start_read_deadline();
-  new_connection->start(std::move(settings));
-}
-
-void server::add_connection(beast_ssl_socket&& socket, serve_mux &mux) {
-  auto new_connection = std::make_shared<connection<beast_ssl_socket>>(
-      mux, tls_handshake_timeout_, read_timeout_, std::move(socket));
-  new_connection->start_read_deadline();
-  new_connection->start();
-}
-
 
 void server::stop() {
   for (auto &acceptor : acceptors_) {
