@@ -39,6 +39,7 @@
 
 #include "nghttp2_config.h"
 
+#include <boost/asio/deadline_timer.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -49,6 +50,10 @@
 
 #include "asio_io_service_pool.h"
 
+#include <boost/beast/core/tcp_stream.hpp>
+#include <boost/beast/ssl/ssl_stream.hpp>
+
+
 namespace nghttp2 {
 
 namespace asio_http2 {
@@ -58,8 +63,6 @@ namespace server {
 class serve_mux;
 
 using boost::asio::ip::tcp;
-
-using ssl_socket = boost::asio::ssl::stream<tcp::socket>;
 
 class server : private boost::noncopyable {
 public:
@@ -72,6 +75,7 @@ public:
                    boost::asio::ssl::context *tls_context,
                    const std::string &address, const std::string &port,
                    int backlog, serve_mux &mux, bool asynchronous = false);
+  void run_without_acceptor(bool asynchronous = false);
   void join();
   void stop();
 
@@ -83,6 +87,11 @@ public:
   const std::vector<int> ports() const;
   /// Returns a vector with all the acceptors endpoints.
   const std::vector<boost::asio::ip::tcp::endpoint> endpoints() const;
+
+  void add_connection(tcp::socket &&socket, serve_mux &mux, std::string settings);
+  void add_connection(ssl_socket &&socket, serve_mux& mux);
+  void add_connection(beast_socket&& socket, serve_mux& mux, std::string settings);
+  void add_connection(beast_ssl_socket&& socket, serve_mux& mux);
 
 private:
   /// Initiate an asynchronous accept operation.
@@ -104,7 +113,7 @@ private:
   /// Acceptor used to listen for incoming connections.
   std::vector<tcp::acceptor> acceptors_;
 
-  std::unique_ptr<boost::asio::ssl::context> ssl_ctx_;
+  // std::unique_ptr<boost::asio::ssl::context> ssl_ctx_;
 
   boost::posix_time::time_duration tls_handshake_timeout_;
   boost::posix_time::time_duration read_timeout_;

@@ -59,7 +59,7 @@ public:
 
   ~http2_handler();
 
-  int start();
+  int start(std::string settings = {});
 
   stream *create_stream(int32_t stream_id);
   void close_stream(int32_t stream_id);

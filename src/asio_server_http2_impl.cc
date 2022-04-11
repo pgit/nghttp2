@@ -69,6 +69,12 @@ bool http2_impl::handle(std::string pattern, request_cb cb) {
   return mux_.handle(std::move(pattern), std::move(cb));
 }
 
+void http2_impl::run_without_acceptor(bool asynchronous) { 
+  server_.reset(
+      new server(num_threads_, tls_handshake_timeout_, read_timeout_));
+  return server_->run_without_acceptor(asynchronous);
+}
+
 void http2_impl::stop() { return server_->stop(); }
 
 void http2_impl::join() { return server_->join(); }
@@ -81,6 +87,26 @@ http2_impl::io_services() const {
 std::vector<int> http2_impl::ports() const { return server_->ports(); }
 
 std::vector<boost::asio::ip::tcp::endpoint> http2_impl::endpoints() const { return server_->endpoints(); }
+
+void http2_impl::add_connection(boost::asio::ip::tcp::socket&& socket, std::string settings)
+{
+  server_->add_connection(std::move(socket), mux_, std::move(settings));
+}
+
+void http2_impl::add_connection(ssl_socket&& socket)
+{
+  server_->add_connection(std::move(socket), mux_);
+}
+
+void http2_impl::add_connection(beast_socket&& socket, std::string settings)
+{
+  server_->add_connection(std::move(socket), mux_, std::move(settings));
+}
+
+void http2_impl::add_connection(beast_ssl_socket&& socket)
+{
+  server_->add_connection(std::move(socket), mux_);
+}
 
 } // namespace server
 

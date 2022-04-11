@@ -85,16 +85,17 @@ public:
         stopped_(false) {}
 
   /// Start the first asynchronous operation for the connection.
-  void start() {
+  void start(std::string settings = {}) {
     boost::system::error_code ec;
 
     handler_ = std::make_shared<http2_handler>(
         GET_IO_SERVICE(socket_), socket_.lowest_layer().remote_endpoint(ec),
         [this]() { do_write(); }, mux_);
-    if (handler_->start() != 0) {
+    if (handler_->start(std::move(settings)) != 0) {
       stop();
       return;
     }
+    do_write();
     do_read();
   }
 

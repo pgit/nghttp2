@@ -267,7 +267,7 @@ const std::string &http2_handler::http_date() {
   return formatted_date_;
 }
 
-int http2_handler::start() {
+int http2_handler::start(std::string settings) {
   int rv;
 
   nghttp2_session_callbacks *callbacks;
@@ -300,6 +300,23 @@ int http2_handler::start() {
 
   nghttp2_settings_entry ent{NGHTTP2_SETTINGS_MAX_CONCURRENT_STREAMS, 100};
   nghttp2_submit_settings(session_, NGHTTP2_FLAG_NONE, &ent, 1);
+
+  //
+  // If called from server side, the settings_payload must be the value received
+  // in HTTP2-Settings header field and must be decoded by base64url decoder.
+  // The settings_payloadlen is the length of settings_payload. It is treated as
+  // if the SETTINGS frame with that payload is received. Thus, callback
+  // functions for the reception of SETTINGS frame will be invoked. The stream
+  // with stream ID=1 is opened. The stream_user_data is ignored. The opened
+  // stream becomes half-closed (remote).
+  //
+  if (!settings.empty()) {
+    auto settings_payload = base64::decode(settings.begin(), settings.end());
+    auto ptr = reinterpret_cast<const uint8_t*>(settings_payload.data());
+    rv = nghttp2_session_upgrade2(session_, ptr, settings_payload.size(), 0, callbacks);
+    if (rv != 0)
+      return -1;
+  }
 
   return 0;
 }

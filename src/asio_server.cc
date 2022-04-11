@@ -51,6 +51,11 @@ server::server(std::size_t io_service_pool_size,
       tls_handshake_timeout_(tls_handshake_timeout),
       read_timeout_(read_timeout) {}
 
+void
+server::run_without_acceptor(bool asynchronous) {
+  // io_service_pool_.run(asynchronous);
+}
+
 boost::system::error_code
 server::listen_and_serve(boost::system::error_code &ec,
                          boost::asio::ssl::context *tls_context,
@@ -185,6 +190,36 @@ void server::start_accept(tcp::acceptor &acceptor, serve_mux &mux) {
         }
       });
 }
+
+void server::add_connection(tcp::socket &&socket, serve_mux &mux, std::string settings) {
+  auto new_connection = std::make_shared<connection<tcp::socket>>(
+      mux, tls_handshake_timeout_, read_timeout_, std::move(socket));
+  new_connection->socket().set_option(tcp::no_delay(true));
+  new_connection->start_read_deadline();
+  new_connection->start(std::move(settings));
+}
+
+void server::add_connection(ssl_socket &&socket, serve_mux &mux) {
+  auto new_connection = std::make_shared<connection<ssl_socket>>(
+      mux, tls_handshake_timeout_, read_timeout_, std::move(socket));
+  new_connection->start_read_deadline();
+  new_connection->start();
+}
+
+void server::add_connection(beast_socket&& socket, serve_mux &mux, std::string settings) {
+  auto new_connection = std::make_shared<connection<beast_socket>>(
+      mux, tls_handshake_timeout_, read_timeout_, std::move(socket));
+  new_connection->start_read_deadline();
+  new_connection->start(std::move(settings));
+}
+
+void server::add_connection(beast_ssl_socket&& socket, serve_mux &mux) {
+  auto new_connection = std::make_shared<connection<beast_ssl_socket>>(
+      mux, tls_handshake_timeout_, read_timeout_, std::move(socket));
+  new_connection->start_read_deadline();
+  new_connection->start();
+}
+
 
 void server::stop() {
   for (auto &acceptor : acceptors_) {
