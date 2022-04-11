@@ -75,7 +75,6 @@ public:
                    boost::asio::ssl::context *tls_context,
                    const std::string &address, const std::string &port,
                    int backlog, serve_mux &mux, bool asynchronous = false);
-  void run_without_acceptor(bool asynchronous = false);
   void join();
   void stop();
 
@@ -87,6 +86,10 @@ public:
   const std::vector<int> ports() const;
   /// Returns a vector with all the acceptors endpoints.
   const std::vector<boost::asio::ip::tcp::endpoint> endpoints() const;
+
+  /// Creatse server object, but doesn't run the IO context or create any threads.
+  /// This is usefull if you are going to call add_connection() after upgrade or ALPN and don't need a listening port.
+  void create();
 
   void add_connection(tcp::socket &&socket, serve_mux &mux, std::string settings);
   void add_connection(ssl_socket &&socket, serve_mux& mux);

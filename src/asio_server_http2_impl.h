@@ -50,13 +50,13 @@ public:
   void tls_handshake_timeout(const boost::posix_time::time_duration &t);
   void read_timeout(const boost::posix_time::time_duration &t);
   bool handle(std::string pattern, request_cb cb);
-  void run_without_acceptor(bool asynchronous);
   void stop();
   void join();
   const std::vector<std::shared_ptr<boost::asio::io_service>> &
   io_services() const;
   std::vector<int> ports() const;
   std::vector<boost::asio::ip::tcp::endpoint> endpoints() const;
+  void create();
   void add_connection(boost::asio::ip::tcp::socket&& socket, std::string settings);
   void add_connection(ssl_socket&& socket);
   void add_connection(beast_socket&& socket, std::string settings);

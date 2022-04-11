@@ -51,11 +51,6 @@ server::server(std::size_t io_service_pool_size,
       tls_handshake_timeout_(tls_handshake_timeout),
       read_timeout_(read_timeout) {}
 
-void
-server::run_without_acceptor(bool asynchronous) {
-  // io_service_pool_.run(asynchronous);
-}
-
 boost::system::error_code
 server::listen_and_serve(boost::system::error_code &ec,
                          boost::asio::ssl::context *tls_context,

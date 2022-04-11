@@ -223,9 +223,6 @@ public:
   // Sets read timeout, which defaults to 60 seconds.
   void read_timeout(const boost::posix_time::time_duration &t);
 
-  /// Start running IO context server, but don't open listening ports. Used with add_connection().
-  void run_without_acceptor(bool asynchronous = false);
-
   // Gracefully stop http2 server
   void stop();
 
@@ -241,6 +238,9 @@ public:
 
   // Returns a vector of the endpoints in use
   std::vector<boost::asio::ip::tcp::endpoint> endpoints() const;
+
+  /// Start running IO context server, but don't open listening ports. Used with add_connection().
+  void create();
 
   void add_connection(boost::asio::ip::tcp::socket &&socket, std::string settings);
   void add_connection(ssl_socket &&socket);
