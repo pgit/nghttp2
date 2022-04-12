@@ -298,9 +298,6 @@ int http2_handler::start(std::string settings) {
     return -1;
   }
 
-  nghttp2_settings_entry ent{NGHTTP2_SETTINGS_MAX_CONCURRENT_STREAMS, 100};
-  nghttp2_submit_settings(session_, NGHTTP2_FLAG_NONE, &ent, 1);
-
   //
   // If called from server side, the settings_payload must be the value received
   // in HTTP2-Settings header field and must be decoded by base64url decoder.
@@ -317,6 +314,9 @@ int http2_handler::start(std::string settings) {
     if (rv != 0)
       return -1;
   }
+
+  nghttp2_settings_entry ent{NGHTTP2_SETTINGS_MAX_CONCURRENT_STREAMS, 100};
+  nghttp2_submit_settings(session_, NGHTTP2_FLAG_NONE, &ent, 1);
 
   return 0;
 }
