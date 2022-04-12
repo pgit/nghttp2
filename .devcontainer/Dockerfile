@@ -24,7 +24,7 @@ RUN apt-get update && \
 # https://pspdfkit.com/blog/2020/visual-studio-code-cpp-docker/
 #
 ARG VARIANT="bullseye"
-ARG LLVM_VERSION=13
+ARG LLVM_VERSION=14
 ARG LLVM_GPG_FINGERPRINT=6084F3CF814B57C1CF12EFD515CF4D18AF4F7421
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
     echo "deb http://apt.llvm.org/${VARIANT}/ llvm-toolchain-${VARIANT}-${LLVM_VERSION} main" >> /etc/apt/sources.list && \
