@@ -226,6 +226,7 @@ public:
   void create();
 
   void add_connection(boost::asio::ip::tcp::socket &&socket, std::string settings);
+  void add_connection(boost::asio::ip::tcp::socket &&socket, const uint8_t* data, size_t len);
   void add_connection(ssl_socket &&socket);
 
 private:

@@ -95,12 +95,16 @@ public:
   const std::string &http_date();
 
   template <size_t N>
-  int on_read(const boost::array<uint8_t, N> &buffer, std::size_t len) {
+  inline int on_read(const boost::array<uint8_t, N> &buffer, std::size_t len) {
+    return on_read(buffer.data(), len);
+  }
+
+  int on_read(const uint8_t *data, std::size_t len) {
     callback_guard cg(*this);
 
     int rv;
 
-    rv = nghttp2_session_mem_recv(session_, buffer.data(), len);
+    rv = nghttp2_session_mem_recv(session_, data, len);
 
     if (rv < 0) {
       return -1;

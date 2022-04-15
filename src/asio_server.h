@@ -89,6 +89,7 @@ public:
   void create();
 
   void add_connection(tcp::socket &&socket, serve_mux &mux, std::string settings);
+  void add_connection(tcp::socket &&socket, serve_mux &mux, const uint8_t* data, size_t len);
   void add_connection(ssl_socket &&socket, serve_mux& mux);
 
 private:

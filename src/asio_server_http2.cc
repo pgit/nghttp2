@@ -101,6 +101,11 @@ void http2::add_connection(boost::asio::ip::tcp::socket &&socket, std::string se
   impl_->add_connection(std::move(socket), std::move(settings));
 }
 
+void http2::add_connection(boost::asio::ip::tcp::socket &&socket, const uint8_t* data, size_t len)
+{
+  impl_->add_connection(std::move(socket), data, len);
+}
+
 void http2::add_connection(ssl_socket &&socket)
 {
   impl_->add_connection(std::move(socket));

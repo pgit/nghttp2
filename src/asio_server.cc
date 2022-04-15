@@ -194,6 +194,14 @@ void server::add_connection(tcp::socket &&socket, serve_mux &mux, std::string se
   new_connection->start(std::move(settings));
 }
 
+void server::add_connection(tcp::socket &&socket, serve_mux &mux, const uint8_t* data, size_t len) {
+  auto new_connection = std::make_shared<connection<tcp::socket>>(
+      mux, tls_handshake_timeout_, read_timeout_, std::move(socket));
+  new_connection->socket().set_option(tcp::no_delay(true));
+  new_connection->start_read_deadline();
+  new_connection->start(data, len);
+}
+
 void server::add_connection(ssl_socket &&socket, serve_mux &mux) {
   auto new_connection = std::make_shared<connection<ssl_socket>>(
       mux, tls_handshake_timeout_, read_timeout_, std::move(socket));

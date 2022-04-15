@@ -307,6 +307,8 @@ int http2_handler::start(std::string settings) {
   // with stream ID=1 is opened. The stream_user_data is ignored. The opened
   // stream becomes half-closed (remote).
   //
+  // FIXME: this doesn't work, yet -- request stalls
+  //
   if (!settings.empty()) {
     auto settings_payload = base64::decode(settings.begin(), settings.end());
     auto ptr = reinterpret_cast<const uint8_t*>(settings_payload.data());
