@@ -523,6 +523,8 @@ void to_token68(std::string &base64str);
 
 StringRef to_base64(BlockAllocator &balloc, const StringRef &token68str);
 
+std::string to_base64(const StringRef &token68str);
+
 void show_candidates(const char *unkopt, const option *options);
 
 bool has_uri_field(const http_parser_url &u, http_parser_url_fields field);

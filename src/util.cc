@@ -528,12 +528,8 @@ void to_token68(std::string &base64str) {
                   std::end(base64str));
 }
 
-StringRef to_base64(BlockAllocator &balloc, const StringRef &token68str) {
-  // At most 3 padding '='
-  auto len = token68str.size() + 3;
-  auto iov = make_byte_ref(balloc, len + 1);
-  auto p = iov.base;
-
+template <class OutputIterator>
+OutputIterator to_base64_impl(OutputIterator p, const StringRef &token68str) {
   p = std::transform(std::begin(token68str), std::end(token68str), p,
                      [](char c) {
                        switch (c) {
@@ -551,9 +547,27 @@ StringRef to_base64(BlockAllocator &balloc, const StringRef &token68str) {
     p = std::fill_n(p, 4 - rem, '=');
   }
 
-  *p = '\0';
+  return p;
+}
 
-  return StringRef{iov.base, p};
+StringRef to_base64(BlockAllocator &balloc, const StringRef &token68str) {
+  // At most 3 padding '='
+  auto len = token68str.size() + 3;
+  auto iov = make_byte_ref(balloc, len + 1);
+
+  auto p = to_base64_impl(reinterpret_cast<char *>(iov.base), token68str);
+  *p++ = '\0';
+
+  return StringRef{reinterpret_cast<char *>(iov.base), p};
+}
+
+std::string to_base64(const StringRef &token68str) {
+  std::string base64;
+  base64.reserve(token68str.size() + 3);
+
+  auto p = to_base64_impl(base64.begin(), token68str);
+  base64.resize(std::distance(begin(base64), p));
+  return base64;
 }
 
 namespace {

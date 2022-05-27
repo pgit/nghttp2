@@ -298,6 +298,9 @@ int http2_handler::start(std::string settings) {
     return -1;
   }
 
+  nghttp2_settings_entry ent{NGHTTP2_SETTINGS_MAX_CONCURRENT_STREAMS, 100};
+  nghttp2_submit_settings(session_, NGHTTP2_FLAG_NONE, &ent, 1);
+
   //
   // If called from server side, the settings_payload must be the value received
   // in HTTP2-Settings header field and must be decoded by base64url decoder.
@@ -307,18 +310,39 @@ int http2_handler::start(std::string settings) {
   // with stream ID=1 is opened. The stream_user_data is ignored. The opened
   // stream becomes half-closed (remote).
   //
-  // FIXME: this doesn't work, yet -- request stalls
+  // FIXME: this works in principle -- stream creation was missing. We do need ot
+  //        get the request URI and headers from HTTP/1 in here, though.
   //
   if (!settings.empty()) {
-    auto settings_payload = base64::decode(settings.begin(), settings.end());
+    auto base64 = util::to_base64(StringRef(begin(settings), end(settings)));
+    auto settings_payload = base64::decode(base64.begin(), base64.end());
+
     auto ptr = reinterpret_cast<const uint8_t*>(settings_payload.data());
     rv = nghttp2_session_upgrade2(session_, ptr, settings_payload.size(), 0, callbacks);
     if (rv != 0)
       return -1;
-  }
 
-  nghttp2_settings_entry ent{NGHTTP2_SETTINGS_MAX_CONCURRENT_STREAMS, 100};
-  nghttp2_submit_settings(session_, NGHTTP2_FLAG_NONE, &ent, 1);
+#if 0
+    // RFC 7540 3.2 -- send REFUSED_STREAM error code if server doesn't want to handle upgraded request
+    rv = nghttp2_submit_rst_stream(session_, 0, 1, NGHTTP2_REFUSED_STREAM);
+#else
+    auto strm = create_stream(1);
+    assert(strm);
+    
+    auto &req = strm->request().impl();
+    auto &uref = req.uri();
+    req.method("GET");
+    uref.scheme.assign("http");
+    uref.host.assign("localhost:8080");
+    std::string query = "/LICENSE";
+    split_path(uref, begin(query), end(query));
+
+    call_on_request(*strm);
+
+    // no support for request data
+    strm->request().impl().call_on_data(nullptr, 0);
+#endif
+  }
 
   return 0;
 }

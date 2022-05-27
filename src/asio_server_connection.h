@@ -99,6 +99,25 @@ public:
     do_read();
   }
 
+  /// Start the first asynchronous operation for the connection.
+  void start(const uint8_t* ptr, size_t len) {
+    boost::system::error_code ec;
+
+    handler_ = std::make_shared<http2_handler>(
+        GET_IO_SERVICE(socket_), socket_.lowest_layer().remote_endpoint(ec),
+        [this]() { do_write(); }, mux_);
+    if (handler_->start() != 0) {
+      stop();
+      return;
+    }
+    if (handler_->on_read(ptr, len)) {
+      stop();
+      return;
+    }
+    do_write();
+    do_read();
+  }
+
   socket_type &socket() { return socket_; }
 
   void start_tls_handshake_deadline() {

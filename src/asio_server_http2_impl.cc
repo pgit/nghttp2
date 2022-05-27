@@ -69,7 +69,7 @@ bool http2_impl::handle(std::string pattern, request_cb cb) {
   return mux_.handle(std::move(pattern), std::move(cb));
 }
 
-void http2_impl::create() { 
+void http2_impl::create() {
   server_.reset(
       new server(num_threads_, tls_handshake_timeout_, read_timeout_));
 }
