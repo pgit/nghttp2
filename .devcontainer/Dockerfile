@@ -68,3 +68,18 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && \
        libxml2-dev libcunit1-dev libev-dev libssl-dev libc-ares-dev libevent-dev zlib1g-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+#
+# .NET (required by CMake via .NET Install Tool)
+#
+# https://docs.microsoft.com/de-de/dotnet/core/install/linux-debian
+#
+# RUN wget https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+#     sudo dpkg -i packages-microsoft-prod.deb && \
+#     rm packages-microsoft-prod.deb
+#
+# RUN apt-get update && \
+#     apt-get install -y apt-transport-https && \
+#     apt-get update && \
+#     DOTNET_CLI_TELEMETRY_OPTOUT=1 apt-get install -y dotnet-sdk-6.0 && \
+#     echo -e "\nexport DOTNET_CLI_TELEMETRY_OPTOUT=1" >>/etc/profile.d/dotnet-cli-tools-bin-path.sh 
