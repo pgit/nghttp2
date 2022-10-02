@@ -484,8 +484,6 @@ int htp_hdrs_completecb(llhttp_t *htp) {
 
 #ifdef HAVE_MRUBY
     dconn_ptr = dconn.get();
-#else
-    std::ignore = dconn_ptr;
 #endif // HAVE_MRUBY
     if (downstream->attach_downstream_connection(std::move(dconn)) == 0) {
       break;

@@ -490,8 +490,6 @@ void Http2Upstream::initiate_downstream(Downstream *downstream) {
 
 #ifdef HAVE_MRUBY
     dconn_ptr = dconn.get();
-#else
-    std::ignore = dconn_ptr;
 #endif // HAVE_MRUBY
     rv = downstream->attach_downstream_connection(std::move(dconn));
     if (rv == 0) {
