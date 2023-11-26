@@ -1,17 +1,26 @@
 {
     "cmake.installPrefix": "${workspaceFolder}/install",
     "cmake.configureOnOpen": false,
+    /*
     "cmake.configureArgs": [
         "-DENABLE_ASIO_LIB=On",
-        "-DENABLE_DEBUG=On",
+        "-DENABLE_DEBUG=Off",  // this is very noisy
         "-DCMAKE_CXX_FLAGS=-stdlib=libc++"
     ],
+    */
+    "cmake.configureSettings": {
+        "ENABLE_ASIO_LIB": true,
+        "ENABLE_DEBUG": false,
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "CMAKE_CXX_FLAGS": "-Wno-error=unused-but-set-variable -stdlib=libc++",
+        "CMAKE_CXX_STANDARD": "20"
+    },
     "files.exclude": {
         "build": true,
         "build/.cache/**": true,
         "install": true
     },
-    "C_Cpp.intelliSenseEngine": "Disabled",
+    "C_Cpp.intelliSenseEngine": "disabled",
     "clangd.arguments": [
         "--clang-tidy",
         "--pch-storage=disk",

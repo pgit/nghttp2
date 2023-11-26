@@ -1,8 +1,9 @@
 #!/bin/bash
 #
+# Use 'update-alternatives' to enable installd LLVM packages as default.
 #
-#
-VERSION=14
+[[ $1 ]] || exit 1
+VERSION=$1
 PRIORITY=100
 
 CMD=(update-alternatives --install /usr/lib/llvm llvm /usr/lib/llvm-$VERSION $PRIORITY)
@@ -12,7 +13,7 @@ CMD=(update-alternatives --install /usr/lib/llvm llvm /usr/lib/llvm-$VERSION $PR
 #
 while read FILE
 do
-    DEST=$(readlink -f "$FILE");
+    DEST=$(readlink -f "$FILE")
     [[ $DEST == /usr/lib/llvm-$VERSION/* ]] || continue
     [[ $FILE == *-$VERSION ]] || continue
     TARGET=${FILE%*-$VERSION}

@@ -26,6 +26,11 @@ cmake_minimum_required(VERSION 3.0)
 # XXX using 1.8.90 instead of 1.9.0-DEV
 project(nghttp2 VERSION 1.50.90)
 
+# add_compile_options(-fsanitize=thread -fno-omit-frame-pointer)
+# add_link_options(-fsanitize=thread)
+# add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
+# add_link_options(-fsanitize=address)
+
 # See versioning rule:
 #  https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
 set(LT_CURRENT  38)
@@ -579,5 +584,3 @@ if(ENABLE_LIB_ONLY_DISABLED_OTHERS)
   message("Only the library will be built. To build other components "
     "(such as applications and examples), set ENABLE_LIB_ONLY=OFF.")
 endif()
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS On)

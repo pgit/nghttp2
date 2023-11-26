@@ -4,18 +4,25 @@
 		"dockerfile": "Dockerfile",
 		// Update 'VARIANT' to pick an Debian version: bullseye, buster, stretch
 		// Use bullseye or stretch on local arm64/Apple Silicon.
-		"args": { "VARIANT": "bullseye" }
+		"args": {
+			"VARIANT": "bullseye",
+			"REINSTALL_CMAKE_VERSION_FROM_SOURCE": "3.25.2"
+		}
 	},
 
-	// Set *default* container specific settings.json values on container create.
-	"settings": {},
+	"customizations": {
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {},
 
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [
-		"ms-vscode.cpptools",
-		"ms-vscode.cmake-tools",
-		"llvm-vs-code-extensions.vscode-clangd"
-	],
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
+				"llvm-vs-code-extensions.vscode-clangd"
+			]
+		}
+	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
