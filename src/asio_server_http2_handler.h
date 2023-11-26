@@ -113,12 +113,19 @@ public:
     return 0;
   }
 
+  //
+  // buffer is referencing our local 64k buffer when entering on_write.
+  // But what are buf_ and buflen_ ?
+  //
   template <size_t N>
   int on_write(boost::array<uint8_t, N> &buffer, std::size_t &len) {
     callback_guard cg(*this);
 
     len = 0;
 
+    //
+    // If there is still something in buf_, it is moved to the beginning of buffer
+    //
     if (buf_) {
       std::copy_n(buf_, buflen_, std::begin(buffer));
 
@@ -130,6 +137,10 @@ public:
 
     for (;;) {
       const uint8_t *data;
+
+      //
+      // Get data from nghttp2 to write --> (data, nread)
+      //
       auto nread = nghttp2_session_mem_send(session_, &data);
       if (nread < 0) {
         return -1;
@@ -139,6 +150,10 @@ public:
         break;
       }
 
+      //
+      // If this is more than what fits into 'buffer', don't try to copy only parts of it,
+      // but remember it for the next time.
+      //
       if (len + nread > buffer.size()) {
         buf_ = data;
         buflen_ = nread;
